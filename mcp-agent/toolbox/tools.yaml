@@ -1,0 +1,103 @@
+# ============================================================
+# Pentest Toolbox - 工具注册表
+# ============================================================
+# 所有工具在此注册，支持分类、标签、依赖声明
+# ============================================================
+
+version: "1.0"
+
+# 工具分类定义
+categories:
+  recon:
+    name: 侦察
+    description: 信息收集和目标探测
+    icon: 🔍
+  
+  sqli:
+    name: SQL注入
+    description: SQL 注入检测和利用
+    icon: 💉
+  
+  xss:
+    name: XSS
+    description: 跨站脚本攻击检测
+    icon: 🎭
+  
+  auth:
+    name: 认证
+    description: 认证和授权测试
+    icon: 🔐
+  
+  utils:
+    name: 工具
+    description: 通用工具
+    icon: 🔧
+
+# 工具注册
+tools:
+  # === 侦察工具 ===
+  recon/port_scan:
+    enabled: true
+    tags: [recon, network, basic]
+    priority: 1  # 优先级，用于推荐
+  
+  recon/dir_enum:
+    enabled: true
+    tags: [recon, web, basic]
+    priority: 1
+  
+  recon/banner_grab:
+    enabled: true
+    tags: [recon, network, service]
+    priority: 2
+  
+  # === SQL注入工具 ===
+  sqli/detect:
+    enabled: true
+    tags: [sqli, web, vuln]
+    priority: 1
+  
+  sqli/union_extract:
+    enabled: true
+    tags: [sqli, web, exploit]
+    priority: 2
+    depends_on: [sqli/detect]  # 依赖关系
+  
+  # === XSS工具 ===
+  xss/detect:
+    enabled: true
+    tags: [xss, web, vuln]
+    priority: 1
+  
+  # === 认证工具 ===
+  auth/brute_login:
+    enabled: true
+    tags: [auth, web, brute]
+    priority: 2
+  
+  # === 通用工具 ===
+  utils/http_request:
+    enabled: true
+    tags: [utils, http]
+    priority: 3
+
+# 工作流模板（可选，用于自动化）
+workflows:
+  web_basic:
+    name: Web 基础测试
+    steps:
+      - tool: recon/dir_enum
+      - tool: sqli/detect
+        condition: "has_form"
+      - tool: xss/detect
+        condition: "has_input"
+  
+  full_scan:
+    name: 完整扫描
+    steps:
+      - tool: recon/port_scan
+      - tool: recon/banner_grab
+        params_from: recon/port_scan.open_ports
+      - tool: recon/dir_enum
+      - tool: sqli/detect
+      - tool: xss/detect
