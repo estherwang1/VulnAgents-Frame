@@ -1,0 +1,148 @@
+# ============================================================
+# Hydra 密码爆破工具
+# ============================================================
+
+name: hydra_brute
+version: "1.0"
+category: auth
+
+description:
+  short: Hydra 密码爆破
+  long: |
+    使用 Hydra 进行多协议密码爆破。
+    支持 SSH、FTP、HTTP、MySQL、RDP 等多种服务。
+    需要安装 hydra: apt install hydra
+
+examples:
+  - name: SSH 爆破
+    params:
+      target: "192.168.1.1"
+      service: "ssh"
+      username: "root"
+    expected: "使用内置字典爆破 SSH root 密码"
+  
+  - name: FTP 爆破
+    params:
+      target: "192.168.1.1"
+      service: "ftp"
+      usernames: ["admin", "ftp", "anonymous"]
+      passwords: ["admin", "123456", "password"]
+    expected: "使用指定用户名密码爆破 FTP"
+  
+  - name: HTTP 表单爆破
+    params:
+      target: "192.168.1.1"
+      service: "http-post-form"
+      username: "admin"
+      http_path: "/login.php"
+      http_form: "user=^USER^&pass=^PASS^"
+      http_fail: "Login failed"
+    expected: "爆破 Web 登录表单"
+  
+  - name: MySQL 爆破
+    params:
+      target: "192.168.1.1"
+      service: "mysql"
+      username: "root"
+      port: 3306
+    expected: "爆破 MySQL root 密码"
+
+params:
+  target:
+    type: string
+    required: true
+    description: 目标 IP 或域名
+    examples: ["192.168.1.1", "target.com"]
+  
+  service:
+    type: string
+    required: true
+    description: 服务类型
+    examples: ["ssh", "ftp", "http-post-form", "mysql", "smb", "rdp", "telnet", "vnc"]
+  
+  username:
+    type: string
+    required: false
+    description: 单个用户名
+    examples: ["admin", "root"]
+  
+  usernames:
+    type: array
+    required: false
+    description: 用户名列表
+    examples: [["admin", "root", "test"]]
+  
+  password:
+    type: string
+    required: false
+    description: 单个密码
+  
+  passwords:
+    type: array
+    required: false
+    description: 密码列表
+    examples: [["123456", "admin", "password"]]
+  
+  port:
+    type: integer
+    required: false
+    description: 端口号（默认使用服务标准端口）
+  
+  ssl:
+    type: boolean
+    required: false
+    default: false
+    description: 是否使用 SSL
+  
+  threads:
+    type: integer
+    required: false
+    default: 4
+    description: 并发线程数
+    min: 1
+    max: 64
+  
+  http_path:
+    type: string
+    required: false
+    description: HTTP 表单路径（用于 http-*-form）
+    examples: ["/login.php", "/admin/login"]
+  
+  http_form:
+    type: string
+    required: false
+    description: HTTP 表单参数（^USER^ 和 ^PASS^ 为占位符）
+    examples: ["user=^USER^&pass=^PASS^", "username=^USER^&password=^PASS^"]
+  
+  http_fail:
+    type: string
+    required: false
+    description: 登录失败时响应中的标识字符串
+    examples: ["Login failed", "Invalid", "错误"]
+  
+  timeout:
+    type: integer
+    required: false
+    default: 300
+    description: 超时时间（秒）
+
+output:
+  type: object
+  properties:
+    success:
+      type: boolean
+      description: 是否找到有效凭据
+    found_credentials:
+      type: array
+      description: 发现的有效凭据
+    flag:
+      type: string
+      description: 发现的 flag
+
+execution:
+  type: python
+  script: hydra_brute.py
+  timeout: 600
+
+tags: [auth, brute, hydra, password, professional]
+author: pentest-agent

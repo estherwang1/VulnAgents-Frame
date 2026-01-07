@@ -1,0 +1,111 @@
+# ============================================================
+# Nmap 端口扫描工具
+# ============================================================
+
+name: nmap_scan
+version: "1.0"
+category: recon
+
+description:
+  short: Nmap 端口扫描
+  long: |
+    使用 Nmap 进行专业的端口扫描和服务识别。
+    支持多种扫描类型、服务版本检测、OS 识别。
+    需要安装 nmap: apt install nmap
+
+examples:
+  - name: 快速扫描常用端口
+    params:
+      target: "192.168.1.1"
+      scan_type: "quick"
+    expected: "快速扫描 Top 100 端口"
+  
+  - name: 扫描指定端口并检测服务
+    params:
+      target: "example.com"
+      ports: "22,80,443,3306,8080"
+      service_detection: true
+    expected: "扫描指定端口并识别服务版本"
+  
+  - name: 全面扫描
+    params:
+      target: "192.168.1.1"
+      ports: "1-1000"
+      service_detection: true
+      os_detection: true
+    expected: "扫描端口、服务、操作系统"
+
+params:
+  target:
+    type: string
+    required: true
+    description: 目标 IP 或域名（支持 CIDR 如 192.168.1.0/24）
+    examples: ["192.168.1.1", "example.com", "192.168.1.0/24"]
+  
+  ports:
+    type: string
+    required: false
+    description: 端口范围
+    examples: ["22,80,443", "1-1000", "1-65535"]
+  
+  scan_type:
+    type: string
+    required: false
+    default: "syn"
+    description: 扫描类型
+    enum: ["syn", "tcp", "udp", "quick", "ping"]
+  
+  service_detection:
+    type: boolean
+    required: false
+    default: true
+    description: 是否检测服务版本 (-sV)
+  
+  os_detection:
+    type: boolean
+    required: false
+    default: false
+    description: 是否检测操作系统 (-O，需要 root)
+  
+  scripts:
+    type: string
+    required: false
+    description: NSE 脚本
+    examples: ["vuln", "default", "http-*"]
+  
+  timing:
+    type: integer
+    required: false
+    default: 4
+    description: 时间模板 (0=最慢最隐蔽, 5=最快最激进)
+    min: 0
+    max: 5
+  
+  timeout:
+    type: integer
+    required: false
+    default: 300
+    description: 超时时间（秒）
+
+output:
+  type: object
+  properties:
+    target:
+      type: string
+    open_ports:
+      type: array
+      description: 开放端口列表
+    services:
+      type: array
+      description: 服务详情
+    hosts:
+      type: array
+      description: 完整主机信息
+
+execution:
+  type: python
+  script: nmap_scan.py
+  timeout: 600
+
+tags: [recon, network, nmap, professional]
+author: pentest-agent

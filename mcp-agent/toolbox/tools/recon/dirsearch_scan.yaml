@@ -1,0 +1,100 @@
+# ============================================================
+# Dirsearch 目录扫描工具
+# ============================================================
+
+name: dirsearch_scan
+version: "1.0"
+category: recon
+
+description:
+  short: Dirsearch 目录扫描
+  long: |
+    使用 Dirsearch 进行专业的 Web 目录和文件枚举。
+    内置大型字典，支持多种扩展名。
+    需要安装 dirsearch: pip install dirsearch
+
+examples:
+  - name: 基础扫描
+    params:
+      url: "http://target.com"
+    expected: "使用默认字典扫描常见目录"
+  
+  - name: 指定扩展名
+    params:
+      url: "http://target.com"
+      extensions: "php,asp,aspx,jsp,bak,old,zip"
+    expected: "扫描多种扩展名"
+  
+  - name: 递归扫描
+    params:
+      url: "http://target.com"
+      recursive: true
+      threads: 30
+    expected: "递归扫描发现的目录"
+
+params:
+  url:
+    type: string
+    required: true
+    description: 目标 URL
+    examples: ["http://target.com", "https://target.com/app"]
+  
+  wordlist:
+    type: string
+    required: false
+    description: 自定义字典路径
+    examples: ["/usr/share/wordlists/dirb/common.txt"]
+  
+  extensions:
+    type: string
+    required: false
+    default: "php,html,txt,bak"
+    description: 扩展名列表（逗号分隔）
+    examples: ["php,html,txt", "asp,aspx,jsp"]
+  
+  threads:
+    type: integer
+    required: false
+    default: 20
+    description: 并发线程数
+    min: 1
+    max: 100
+  
+  recursive:
+    type: boolean
+    required: false
+    default: false
+    description: 是否递归扫描子目录
+  
+  exclude_status:
+    type: string
+    required: false
+    default: "404"
+    description: 排除的状态码（逗号分隔）
+    examples: ["404", "404,403,500"]
+  
+  timeout:
+    type: integer
+    required: false
+    default: 300
+    description: 超时时间（秒）
+
+output:
+  type: object
+  properties:
+    url:
+      type: string
+    found:
+      type: array
+      description: 发现的路径列表
+    total:
+      type: integer
+      description: 发现数量
+
+execution:
+  type: python
+  script: dirsearch_scan.py
+  timeout: 600
+
+tags: [recon, web, directory, dirsearch, professional]
+author: pentest-agent
