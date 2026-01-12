@@ -1,0 +1,85 @@
+# ============================================================
+# Pentest Toolbox - 配置文件
+# ============================================================
+# 工具会自动从 tools/ 目录扫描发现
+# 此文件用于：分类定义、禁用工具、工作流配置
+# ============================================================
+
+version: "1.0"
+
+# 分类定义（用于美化显示）
+# 新分类会自动识别，这里只是添加图标和中文名
+categories:
+  recon:
+    name: 侦察
+    description: 信息收集和目标探测
+    icon: 🔍
+  
+  sqli:
+    name: SQL注入
+    description: SQL 注入检测和利用
+    icon: 💉
+  
+  xss:
+    name: XSS
+    description: 跨站脚本攻击检测
+    icon: 🎭
+  
+  lfi:
+    name: 文件包含
+    description: 本地/远程文件包含检测
+    icon: 📁
+  
+  injection:
+    name: 命令注入
+    description: 操作系统命令注入检测
+    icon: 💻
+  
+  auth:
+    name: 认证
+    description: 认证和授权测试
+    icon: 🔐
+  
+  web:
+    name: Web工具
+    description: Web 应用测试工具
+    icon: 🌐
+  
+  utils:
+    name: 工具
+    description: 通用工具
+    icon: 🔧
+
+# 工具配置（可选）
+# 只需要写需要特殊配置的工具
+tools:
+  # 示例：禁用某个工具
+  # sqli/union_extract:
+  #   enabled: false
+  
+  # 示例：设置优先级
+  # recon/port_scan:
+  #   priority: 1
+
+# 工作流模板（可选）
+workflows:
+  web_basic:
+    name: Web 基础测试
+    description: 快速 Web 漏洞扫描
+    steps:
+      - tool: recon/dir_enum
+      - tool: sqli/sqli_detect
+      - tool: xss/xss_detect
+  
+  full_scan:
+    name: 完整扫描
+    description: 全面渗透测试流程
+    steps:
+      - tool: recon/port_scan
+      - tool: recon/dir_enum
+      - tool: web/crawler
+      - tool: sqli/sqli_detect
+      - tool: xss/xss_detect
+      - tool: lfi/lfi_detect
+      - tool: injection/cmd_detect
+      - tool: auth/password_brute

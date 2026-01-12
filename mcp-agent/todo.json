@@ -846,5 +846,49 @@
     "start_time": "2026-01-08T00:36:31.105791",
     "log_file": "/root/pentest_workspace/SHADOW-20260108-003406-70C3/T1767803790.log",
     "end_time": "2026-01-08T00:36:39.618376"
+  },
+  {
+    "task_id": "T1768219432",
+    "stamp": "SHADOW-20260108-145230-A6AB",
+    "pid": "2020303",
+    "script_name": "sqli_test.py",
+    "script_path": "/root/pentest_workspace/SHADOW-20260108-145230-A6AB/sqli_test.py",
+    "status": "COMPLETED",
+    "start_time": "2026-01-12T20:03:53.304373",
+    "log_file": "/root/pentest_workspace/SHADOW-20260108-145230-A6AB/T1768219432.log",
+    "end_time": "2026-01-12T20:03:57.869211"
+  },
+  {
+    "task_id": "T1768219469",
+    "stamp": "SHADOW-20260108-145230-A6AB",
+    "pid": "2020564",
+    "script_name": "connectivity_test.py",
+    "script_path": "/root/pentest_workspace/SHADOW-20260108-145230-A6AB/connectivity_test.py",
+    "status": "COMPLETED",
+    "start_time": "2026-01-12T20:04:44.555658",
+    "log_file": "/root/pentest_workspace/SHADOW-20260108-145230-A6AB/T1768219469.log",
+    "end_time": "2026-01-12T20:04:50.181001"
+  },
+  {
+    "task_id": "T1768219889",
+    "stamp": "SHADOW-20260112-200929-2706",
+    "pid": "2023193",
+    "script_name": "sqli_exploit.py",
+    "script_path": "/root/pentest_workspace/SHADOW-20260112-200929-2706/sqli_exploit.py",
+    "status": "COMPLETED",
+    "start_time": "2026-01-12T20:11:31.146178",
+    "log_file": "/root/pentest_workspace/SHADOW-20260112-200929-2706/T1768219889.log",
+    "end_time": "2026-01-12T20:11:36.454498"
+  },
+  {
+    "task_id": "T1768219914",
+    "stamp": "SHADOW-20260112-200929-2706",
+    "pid": "2023355",
+    "script_name": "sqli_phase2.py",
+    "script_path": "/root/pentest_workspace/SHADOW-20260112-200929-2706/sqli_phase2.py",
+    "status": "COMPLETED",
+    "start_time": "2026-01-12T20:11:54.523308",
+    "log_file": "/root/pentest_workspace/SHADOW-20260112-200929-2706/T1768219914.log",
+    "end_time": "2026-01-12T20:11:58.346714"
   }
 ]

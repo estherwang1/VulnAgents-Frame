@@ -1,0 +1,105 @@
+# ============================================================
+# 端口扫描工具配置
+# ============================================================
+
+name: port_scan
+version: "1.0"
+category: recon
+
+# 工具描述
+description:
+  short: TCP 端口扫描
+  long: |
+    扫描目标主机的 TCP 端口，发现开放的服务。
+    支持自定义端口范围和并发数。
+
+# 使用示例（帮助 LLM 理解如何调用）
+examples:
+  - name: 扫描常用端口
+    params:
+      target: "192.168.1.1"
+    expected: "返回开放端口列表"
+  
+  - name: 扫描指定端口
+    params:
+      target: "example.com"
+      ports: "80,443,8080"
+    expected: "返回这三个端口的状态"
+  
+  - name: 扫描端口范围
+    params:
+      target: "10.0.0.1"
+      ports: "1-1000"
+      threads: 50
+    expected: "快速扫描 1-1000 端口"
+
+# 参数定义
+params:
+  target:
+    type: string
+    required: true
+    description: 目标 IP 地址或域名
+    examples: ["192.168.1.1", "example.com"]
+  
+  ports:
+    type: string
+    required: false
+    default: "21,22,23,25,53,80,110,143,443,445,993,995,1433,3306,3389,5432,6379,8080,8443,9000"
+    description: |
+      端口列表，支持格式：
+      - 逗号分隔: 80,443,8080
+      - 范围: 1-1000
+      - 混合: 22,80,443,8000-9000
+    examples: ["80,443", "1-1000", "22,80,443,8000-9000"]
+  
+  timeout:
+    type: float
+    required: false
+    default: 1.0
+    description: 单个端口连接超时（秒）
+    min: 0.1
+    max: 10.0
+  
+  threads:
+    type: integer
+    required: false
+    default: 20
+    description: 并发扫描线程数
+    min: 1
+    max: 100
+
+# 输出定义
+output:
+  type: object
+  properties:
+    target:
+      type: string
+      description: 扫描的目标
+    open_ports:
+      type: array
+      items: integer
+      description: 开放的端口列表
+    scanned_count:
+      type: integer
+      description: 扫描的端口总数
+    open_count:
+      type: integer
+      description: 开放端口数量
+  
+  # 输出示例
+  example:
+    target: "192.168.1.1"
+    open_ports: [22, 80, 443, 3306]
+    scanned_count: 20
+    open_count: 4
+
+# 执行配置
+execution:
+  type: python
+  script: port_scan.py
+  class: PortScanner
+  timeout: 300  # 最大执行时间（秒）
+
+# 标签和元数据
+tags: [network, tcp, basic, fast]
+author: pentest-agent

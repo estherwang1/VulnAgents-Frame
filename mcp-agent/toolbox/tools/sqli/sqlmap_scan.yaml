@@ -1,0 +1,144 @@
+# ============================================================
+# SQLMap SQL注入工具
+# ============================================================
+
+name: sqlmap_scan
+version: "1.0"
+category: sqli
+
+description:
+  short: SQLMap 自动化 SQL 注入
+  long: |
+    使用 SQLMap 进行自动化 SQL 注入检测和利用。
+    支持多种数据库、注入技术、数据提取。
+    需要安装 sqlmap: apt install sqlmap
+
+examples:
+  - name: 基础检测
+    params:
+      url: "http://target.com/page.php?id=1"
+    expected: "检测 id 参数是否存在 SQL 注入"
+  
+  - name: POST 注入检测
+    params:
+      url: "http://target.com/login.php"
+      data: "username=admin&password=123"
+      param: "username"
+    expected: "检测 POST 参数"
+  
+  - name: 枚举数据库
+    params:
+      url: "http://target.com/page.php?id=1"
+      dbs: true
+      level: 2
+    expected: "检测注入并列出所有数据库"
+  
+  - name: 导出数据
+    params:
+      url: "http://target.com/page.php?id=1"
+      dump: "security.users"
+    expected: "导出 security 库 users 表的数据"
+
+params:
+  url:
+    type: string
+    required: true
+    description: 目标 URL（带参数）
+    examples: ["http://target.com/page.php?id=1"]
+  
+  param:
+    type: string
+    required: false
+    description: 指定测试的参数名
+    examples: ["id", "username"]
+  
+  data:
+    type: string
+    required: false
+    description: POST 请求数据
+    examples: ["username=admin&password=123"]
+  
+  cookie:
+    type: string
+    required: false
+    description: Cookie 值
+    examples: ["PHPSESSID=abc123"]
+  
+  level:
+    type: integer
+    required: false
+    default: 1
+    description: 检测级别 (1-5，越高越全面但越慢)
+    min: 1
+    max: 5
+  
+  risk:
+    type: integer
+    required: false
+    default: 1
+    description: 风险级别 (1-3，越高 payload 越激进)
+    min: 1
+    max: 3
+  
+  dbs:
+    type: boolean
+    required: false
+    default: false
+    description: 是否枚举数据库
+  
+  tables:
+    type: string
+    required: false
+    description: 枚举指定数据库的表
+    examples: ["mysql", "information_schema"]
+  
+  dump:
+    type: string
+    required: false
+    description: "导出指定表的数据 (格式: db.table)"
+    examples: ["security.users", "mysql.user"]
+  
+  technique:
+    type: string
+    required: false
+    description: 注入技术 (B=布尔, E=报错, U=联合, S=堆叠, T=时间)
+    examples: ["BEUST", "U", "T"]
+  
+  batch:
+    type: boolean
+    required: false
+    default: true
+    description: 非交互模式（自动确认）
+  
+  timeout:
+    type: integer
+    required: false
+    default: 300
+    description: 超时时间（秒）
+
+output:
+  type: object
+  properties:
+    vulnerable:
+      type: boolean
+      description: 是否存在漏洞
+    dbms:
+      type: string
+      description: 数据库类型
+    databases:
+      type: array
+      description: 数据库列表
+    injection_types:
+      type: array
+      description: 注入类型
+    flag:
+      type: string
+      description: 发现的 flag
+
+execution:
+  type: python
+  script: sqlmap_scan.py
+  timeout: 600
+
+tags: [sqli, database, sqlmap, professional, exploit]
+author: pentest-agent

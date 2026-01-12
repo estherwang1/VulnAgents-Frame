@@ -1,0 +1,110 @@
+# ============================================================
+# Nikto Web 漏洞扫描工具
+# ============================================================
+
+name: nikto_scan
+version: "1.0"
+category: web
+
+description:
+  short: Nikto Web 漏洞扫描
+  long: |
+    使用 Nikto 进行 Web 服务器漏洞扫描。
+    检测过时软件、危险文件、配置问题等。
+    需要安装 nikto: apt install nikto
+
+examples:
+  - name: 基础扫描
+    params:
+      url: "http://target.com"
+    expected: "扫描常见 Web 漏洞"
+  
+  - name: HTTPS 扫描
+    params:
+      url: "target.com"
+      port: 443
+      ssl: true
+    expected: "扫描 HTTPS 站点"
+  
+  - name: 指定调优
+    params:
+      url: "http://target.com"
+      tuning: "123"
+    expected: "只运行特定类型的测试"
+
+params:
+  url:
+    type: string
+    required: true
+    description: 目标 URL 或 IP
+    examples: ["http://target.com", "192.168.1.1"]
+  
+  port:
+    type: integer
+    required: false
+    description: 端口号（默认 80/443）
+    examples: [80, 443, 8080]
+  
+  ssl:
+    type: boolean
+    required: false
+    default: false
+    description: 是否使用 SSL
+  
+  plugins:
+    type: string
+    required: false
+    description: 指定插件
+    examples: ["tests", "apacheusers"]
+  
+  tuning:
+    type: string
+    required: false
+    description: |
+      扫描调优选项:
+      0 - File Upload
+      1 - Interesting File
+      2 - Misconfiguration
+      3 - Information Disclosure
+      4 - Injection (XSS/Script)
+      5 - Remote File Retrieval
+      6 - Denial of Service
+      7 - Remote File Retrieval (Server Wide)
+      8 - Command Execution
+      9 - SQL Injection
+      a - Authentication Bypass
+      b - Software Identification
+      c - Remote source inclusion
+    examples: ["123", "x6789", "ab"]
+  
+  timeout:
+    type: integer
+    required: false
+    default: 600
+    description: 超时时间（秒）
+
+output:
+  type: object
+  properties:
+    target:
+      type: string
+    server:
+      type: string
+      description: 服务器信息
+    vulnerabilities:
+      type: array
+      description: 发现的漏洞
+    findings:
+      type: array
+      description: 其他发现
+    interesting:
+      type: array
+      description: 有趣的文件/目录
+
+execution:
+  type: python
+  script: nikto_scan.py
+  timeout: 900
+
+tags: [web, vuln, nikto, scanner, professional]
+author: pentest-agent
