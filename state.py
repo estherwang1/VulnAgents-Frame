@@ -1,0 +1,110 @@
+# -*- coding: utf-8 -*-
+"""
+State Definition
+渗透测试状态机的状态定义
+
+修复：添加 step_count 用于追踪总步数，防止无限循环
+"""
+
+from typing import Literal, Optional, Annotated
+from typing_extensions import TypedDict
+from langgraph.graph.message import add_messages
+from langchain_core.messages import AnyMessage
+
+
+class Finding(TypedDict):
+    """漏洞发现"""
+    vuln_type: str
+    severity: str
+    description: str
+    evidence: dict
+
+
+class TaskResult(TypedDict):
+    """任务执行结果"""
+    task_id: str
+    status: str
+    output: str
+
+
+class PentestState(TypedDict):
+    """
+    渗透测试状态
+
+    这个状态会在所有节点之间传递和更新
+    """
+    # 消息历史（必须用 AnyMessage 类型 + add_messages 归约器）
+    messages: Annotated[list[AnyMessage], add_messages]
+
+    # 基本信息
+    stamp: str                          # 任务戳
+    target: str                         # 目标
+    mission_name: str                   # 任务名称
+
+    # 阶段控制
+    current_phase: Literal[
+        "init",           # 初始化
+        "recon",          # 侦察阶段
+        "vuln_test",      # 漏洞测试阶段
+        "access_test",    # 访问控制测试阶段
+        "report",         # 报告生成阶段
+        "completed"       # 完成
+    ]
+
+    # 路由决策（主代理设置，router 读取）
+    next_agent: Literal[
+        "recon",          # 委派给侦察专家
+        "input_vuln",     # 委派给输入漏洞专家
+        "access_logic",   # 委派给访问控制专家
+        "knowledge",      # 委派给知识库专家
+        "report",         # 生成报告
+        "end"             # 结束
+    ]
+
+    # 任务完成标志（子代理通过 end_mission 工具设置）
+    mission_complete: bool              # 任务是否已完成
+    mission_end_reason: Optional[str]   # 结束原因
+
+    # 侦察结果
+    recon_results: Optional[dict]       # 端口、服务、目录等
+
+    # 漏洞发现
+    findings: list[Finding]
+
+    # 任务记录
+    task_history: list[TaskResult]
+
+    # 错误信息
+    error: Optional[str]
+
+    # === 新增：步数追踪 ===
+    step_count: int                     # 主代理调用次数
+
+
+# 初始状态工厂
+def create_initial_state(target: str, mission_name: str = "渗透测试任务") -> PentestState:
+    """
+    创建初始状态
+
+    Args:
+        target: 目标地址
+        mission_name: 任务名称
+
+    Returns:
+        初始化的状态
+    """
+    return PentestState(
+        messages=[],
+        stamp="",
+        target=target,
+        mission_name=mission_name,
+        current_phase="init",
+        next_agent="recon",
+        mission_complete=False,
+        mission_end_reason=None,
+        recon_results=None,
+        findings=[],
+        task_history=[],
+        error=None,
+        step_count=0,
+    )
